@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Portfolio CMS</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    [data-theme="dark"] {
+      --bg:#09090f;--bg2:#0e0e18;--bg-card:#111120;--bg-card2:#0d0d1a;
+      --border:rgba(180,60,120,0.18);--border-soft:rgba(255,255,255,0.07);
+      --text:#f2eeff;--muted:#8a88aa;--faint:#4a4870;
+      --accent-a:#c2005a;--accent-b:#8200c8;--accent-c:#ff2060;
+      --glow:rgba(194,0,90,0.3);--nav-bg:rgba(9,9,15,0.85);
+      --shadow:rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] {
+      --bg:#faf8ff;--bg2:#f2eeff;--bg-card:#fff;--bg-card2:#f5f2ff;
+      --border:rgba(160,20,100,0.14);--border-soft:rgba(0,0,0,0.07);
+      --text:#1a0d2e;--muted:#6b5c82;--faint:#c0b0d8;
+      --accent-a:#b8004f;--accent-b:#7200b0;--accent-c:#e0004a;
+      --glow:rgba(180,0,80,0.15);--nav-bg:rgba(250,248,255,0.9);
+      --shadow:rgba(80,40,120,0.08);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;transition:background 0.4s,color 0.4s}
+    h1,h2,h3{font-family:'Playfair Display',serif}
+    a{color:inherit;text-decoration:none}
+
+    /* Wave bg */
+    #wave-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.6}
+
+    /* Login */
+    #login-screen{
+      position:fixed;inset:0;z-index:100;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--bg);
+    }
+    .login-box{
+      position:relative;z-index:1;
+      width:360px;
+      background:var(--bg-card);border:1px solid var(--border);
+      border-radius:24px;padding:3rem 2.5rem;text-align:center;
+      box-shadow:0 24px 80px var(--shadow);
+    }
+    .login-logo{
+      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;
+      background:linear-gradient(135deg,var(--accent-c),var(--accent-b));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:0.4rem;
+    }
+    .login-sub{font-size:0.78rem;color:var(--muted);margin-bottom:2.5rem;letter-spacing:0.06em}
+    .login-input{
+      width:100%;background:var(--bg2);border:1px solid var(--border-soft);
+      color:var(--text);font-family:'Outfit',sans-serif;font-size:1rem;
+      padding:0.9rem 1.2rem;border-radius:12px;outline:none;margin-bottom:1rem;
+      text-align:center;letter-spacing:4px;transition:border-color 0.3s;
+    }
+    .login-input:focus{border-color:var(--accent-a)}
+    .login-btn{
+      width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      color:#fff;font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:500;
+      border:none;padding:0.9rem;border-radius:12px;cursor:pointer;
+      transition:all 0.3s;
+    }
+    .login-btn:hover{box-shadow:0 6px 24px var(--glow);transform:translateY(-2px)}
+    .login-err{color:var(--accent-c);font-size:0.8rem;margin-top:0.8rem;display:none}
+    .login-hint{font-size:0.72rem;color:var(--faint);margin-top:1.4rem}
+
+    /* Admin layout */
+    #admin-main{display:none;position:relative;z-index:1}
+    .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+    /* Sidebar */
+    .sidebar{
+      background:var(--nav-bg);border-right:1px solid var(--border-soft);
+      padding:2rem 1.2rem;position:sticky;top:0;height:100vh;overflow-y:auto;
+      backdrop-filter:blur(20px);display:flex;flex-direction:column;
+    }
+    .sidebar-brand{
+      font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;
+      background:linear-gradient(135deg,var(--accent-c),var(--accent-b));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:0.3rem;
+    }
+    .sidebar-ver{font-size:0.72rem;color:var(--faint);margin-bottom:2rem}
+    .sidebar-nav{display:flex;flex-direction:column;gap:0.25rem;flex:1}
+    .nav-btn{
+      display:flex;align-items:center;gap:0.75rem;
+      font-family:'Outfit',sans-serif;font-size:0.85rem;color:var(--muted);
+      padding:0.7rem 1rem;border-radius:12px;cursor:pointer;border:1px solid transparent;
+      transition:all 0.2s;background:transparent;width:100%;text-align:left;
+    }
+    .nav-btn:hover{background:var(--bg-card2);color:var(--text)}
+    .nav-btn.active{background:var(--bg-card2);border-color:var(--border);color:var(--text)}
+    .sidebar-bottom{margin-top:auto;padding-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem}
+    .sidebar-theme-btn{
+      display:flex;align-items:center;gap:0.6rem;font-size:0.8rem;color:var(--muted);
+      padding:0.6rem 1rem;border-radius:10px;cursor:pointer;border:1px solid var(--border-soft);
+      background:transparent;transition:all 0.2s;
+    }
+    .sidebar-theme-btn:hover{color:var(--text);border-color:var(--border)}
+    .logout-btn{
+      display:flex;align-items:center;gap:0.6rem;font-size:0.8rem;color:var(--muted);
+      padding:0.6rem 1rem;border-radius:10px;cursor:pointer;border:none;background:transparent;
+      transition:color 0.2s;
+    }
+    .logout-btn:hover{color:var(--accent-c)}
+
+    /* Content area */
+    .admin-content{padding:3rem 3.5rem;overflow-y:auto}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .page-title{font-size:2rem;margin-bottom:0.3rem}
+    .page-sub{font-size:0.82rem;color:var(--muted);margin-bottom:2.5rem}
+
+    /* Form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+    .form-group{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.2rem}
+    .form-label{font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .form-ctrl{
+      background:var(--bg-card2);border:1px solid var(--border-soft);color:var(--text);
+      font-family:'Outfit',sans-serif;font-size:0.9rem;padding:0.8rem 1rem;
+      border-radius:10px;outline:none;transition:border-color 0.3s;
+    }
+    .form-ctrl:focus{border-color:var(--accent-a);box-shadow:0 0 0 3px rgba(194,0,90,0.1)}
+    textarea.form-ctrl{resize:vertical;min-height:110px}
+    .form-hint{font-size:0.72rem;color:var(--faint)}
+
+    /* Buttons */
+    .btn{font-family:'Outfit',sans-serif;font-size:0.82rem;font-weight:500;padding:0.65rem 1.4rem;border-radius:50px;cursor:pointer;border:none;transition:all 0.25s;letter-spacing:0.03em}
+    .btn-primary{background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:#fff;box-shadow:0 2px 14px var(--glow)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px var(--glow)}
+    .btn-ghost{background:transparent;border:1px solid var(--border-soft);color:var(--muted)}
+    .btn-ghost:hover{border-color:var(--accent-a);color:var(--text)}
+    .btn-danger{background:rgba(200,0,74,0.1);border:1px solid rgba(200,0,74,0.25);color:var(--accent-c)}
+    .btn-danger:hover{background:rgba(200,0,74,0.2)}
+    .btn-sm{padding:0.4rem 0.9rem;font-size:0.75rem}
+
+    /* Divider */
+    hr{border:none;border-top:1px solid var(--border-soft);margin:2rem 0}
+
+    /* Tag inputs */
+    .tag-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.6rem}
+    .tag-chip{display:flex;align-items:center;gap:0.4rem;font-size:0.72rem;padding:0.28rem 0.75rem;border-radius:50px;background:var(--bg-card2);border:1px solid var(--border-soft);color:var(--muted)}
+    .tag-x{cursor:pointer;color:var(--accent-c);font-size:1rem;line-height:1}
+
+    /* Item list */
+    .item-list{display:flex;flex-direction:column;gap:0.9rem;margin-bottom:1.8rem}
+    .item-card{
+      display:flex;align-items:center;justify-content:space-between;gap:1rem;
+      background:var(--bg-card);border:1px solid var(--border-soft);border-radius:14px;
+      padding:1.3rem 1.5rem;transition:border-color 0.2s;
+    }
+    .item-card:hover{border-color:var(--border)}
+    .item-info{flex:1}
+    .item-title{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:0.2rem}
+    .item-meta{font-size:0.75rem;color:var(--muted)}
+    .item-actions{display:flex;gap:0.5rem}
+
+    /* Upload area */
+    .upload-zone{
+      border:2px dashed var(--border);border-radius:14px;padding:2.5rem;text-align:center;
+      cursor:pointer;transition:all 0.3s;background:var(--bg-card2);
+    }
+    .upload-zone:hover{border-color:var(--accent-a);background:rgba(194,0,90,0.04)}
+    .upload-zone p{font-size:0.82rem;color:var(--muted);margin-top:0.5rem}
+    .upload-preview{max-width:180px;border-radius:12px;margin-top:1rem}
+
+    /* Stats row */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(9,9,15,0.85);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:580px;max-width:90vw;max-height:85vh;overflow-y:auto}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+    .modal-head h2{font-size:1.4rem}
+    .modal-close{background:none;border:none;font-size:1.6rem;color:var(--muted);cursor:pointer;line-height:1}
+    .modal-close:hover{color:var(--text)}
+    .modal-foot{display:flex;justify-content:flex-end;gap:0.8rem;margin-top:2rem}
+
+    /* Save bar */
+    .save-bar{
+      position:fixed;bottom:2rem;right:2rem;z-index:200;
+      display:flex;align-items:center;gap:1rem;
+      background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+      padding:1rem 1.5rem;box-shadow:0 10px 40px var(--shadow);
+      transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(.22,1,.36,1);
+    }
+    .save-bar.show{transform:translateY(0);opacity:1}
+    .save-bar p{font-size:0.82rem;color:var(--muted)}
+
+    /* Export */
+    .export-code{
+      background:var(--bg);border:1px solid var(--border-soft);border-radius:10px;
+      padding:1.5rem;font-family:monospace;font-size:0.72rem;color:var(--muted);
+      white-space:pre-wrap;overflow-x:auto;max-height:280px;overflow-y:auto;line-height:1.7;
+    }
+
+    /* Alert */
+    .alert{padding:1rem 1.2rem;border-radius:12px;font-size:0.82rem;margin-bottom:1.5rem;line-height:1.7}
+    .alert-info{background:rgba(130,0,200,0.08);border:1px solid rgba(130,0,200,0.2);color:#b060ff}
+    .alert-ok{background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.2);color:#00cc66}
+
+    /* Toast */
+    .toast{
+      position:fixed;top:2rem;right:2rem;z-index:500;
+      background:rgba(0,200,100,0.12);border:1px solid rgba(0,200,100,0.3);color:#00cc66;
+      font-size:0.82rem;padding:0.9rem 1.4rem;border-radius:12px;
+      transition:all 0.3s;pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="wave-bg"></canvas>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Portfolio CMS</div>
+    <div class="login-sub">Restricted Access — Admin Only</div>
+    <input type="password" id="login-pw" class="login-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Authenticate</button>
+    <div class="login-err" id="login-err">Invalid password. Try again.</div>
+    <div class="login-hint">Default: <code>admin123</code> — change in Settings</div>
+  </div>
+</div>
+
+<!-- Admin -->
+<div id="admin-main">
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">Portfolio CMS</div>
+      <div class="sidebar-ver">v2.0</div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" onclick="switchTab('personal',this)">👤 Personal</button>
+        <button class="nav-btn" onclick="switchTab('skills',this)">⚔️ Skills</button>
+        <button class="nav-btn" onclick="switchTab('projects',this)">📁 Projects</button>
+        <button class="nav-btn" onclick="switchTab('blog',this)">📝 Blog</button>
+        <button class="nav-btn" onclick="switchTab('contact',this)">📡 Contact</button>
+        <button class="nav-btn" onclick="switchTab('export',this)">💾 Export</button>
+        <button class="nav-btn" onclick="switchTab('settings',this)">⚙️ Settings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="sidebar-theme-btn" onclick="toggleTheme()">🌗 Toggle Theme</button>
+        <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+
+      <!-- PERSONAL -->
+      <div id="tab-personal" class="tab-content active">
+        <h1 class="page-title">Personal</h1>
+        <p class="page-sub">Your identity and hero section</p>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Full Name</label><input id="p-name" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">Nav Initials</label><input id="p-initials" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">Title / Role</label><input id="p-title" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">Subtitle</label><input id="p-subtitle" class="form-ctrl" oninput="dirty()"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Hero Tagline</label><textarea id="p-tagline" class="form-ctrl" rows="2" oninput="dirty()"></textarea></div>
+        <div class="form-group"><label class="form-label">Bio</label><textarea id="p-bio" class="form-ctrl" oninput="dirty()"></textarea></div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Availability Status</label><input id="p-status" class="form-ctrl" oninput="dirty()"></div>
+        </div>
+        <hr>
+        <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Stats</h3>
+        <div class="stats-grid">
+          <div class="form-group"><label class="form-label">Experience</label><input id="s-exp" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">CVEs</label><input id="s-cves" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">CTF Wins</label><input id="s-ctf" class="form-ctrl" oninput="dirty()"></div>
+          <div class="form-group"><label class="form-label">Clients</label><input id="s-clients" class="form-ctrl" oninput="dirty()"></div>
+        </div>
+        <hr>
+        <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Profile Photo</h3>
+        <div class="upload-zone" onclick="document.getElementById('photo-file').click()">
+          <p>📷 Click to upload photo (embedded as base64)</p>
+          <img id="photo-prev" class="upload-preview" style="display:none">
+        </div>
+        <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="uploadPhoto(event)">
+        <hr>
+        <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Certifications</h3>
+        <div class="tag-row" id="cert-tags"></div>
+        <div style="display:flex;gap:0.8rem;align-items:center">
+          <input id="cert-inp" class="form-ctrl" style="max-width:180px" placeholder="e.g. OSCP" onkeydown="if(event.key==='Enter')addCert()">
+          <button class="btn btn-ghost btn-sm" onclick="addCert()">+ Add</button>
+        </div>
+      </div>
+
+      <!-- SKILLS -->
+      <div id="tab-skills" class="tab-content">
+        <h1 class="page-title">Skills</h1>
+        <p class="page-sub">Technical categories and tools</p>
+        <div class="item-list" id="skills-list"></div>
+        <button class="btn btn-primary" onclick="openSkillModal()">+ Add Category</button>
+      </div>
+
+      <!-- PROJECTS -->
+      <div id="tab-projects" class="tab-content">
+        <h1 class="page-title">Projects</h1>
+        <p class="page-sub">Portfolio projects and case studies</p>
+        <div class="item-list" id="proj-list"></div>
+        <button class="btn btn-primary" onclick="openProjModal()">+ Add Project</button>
+      </div>
+
+      <!-- BLOG -->
+      <div id="tab-blog" class="tab-content">
+        <h1 class="page-title">Blog Posts</h1>
+        <p class="page-sub">Writeups, research, CTF solutions</p>
+        <div class="item-list" id="blog-list"></div>
+        <button class="btn btn-primary" onclick="openPostModal()">+ Add Post</button>
+      </div>
+
+      <!-- CONTACT -->
+      <div id="tab-contact" class="tab-content">
+        <h1 class="page-title">Contact</h1>
+        <p class="page-sub">Contact section and social links</p>
+        <div class="form-group"><label class="form-label">Intro Text</label><textarea id="c-intro" class="form-ctrl" oninput="dirty()"></textarea></div>
+        <hr>
+        <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Social Links</h3>
+        <div class="item-list" id="link-list"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addLink()">+ Add Link</button>
+      </div>
+
+      <!-- EXPORT -->
+      <div id="tab-export" class="tab-content">
+        <h1 class="page-title">Export & Deploy</h1>
+        <p class="page-sub">Generate updated data.js for your GitHub repo</p>
+        <div class="alert alert-info">After editing, generate → copy → paste into <code>assets/js/data.js</code> on GitHub → commit → done.</div>
+        <button class="btn btn-primary" onclick="genExport()" style="margin-bottom:1.5rem">⚙ Generate data.js</button>
+        <div id="export-out" class="export-code" style="display:none"></div>
+        <div id="copy-wrap" style="display:none;margin-top:1rem">
+          <button class="btn btn-ghost" onclick="copyExport()">📋 Copy to Clipboard</button>
+        </div>
+        <hr>
+        <div class="alert alert-info" style="line-height:2">
+          <strong>GitHub Pages Steps:</strong><br>
+          1. Repo named <code>yourusername.github.io</code><br>
+          2. Settings → Pages → Source: main branch / root<br>
+          3. Admin at <code>/admin/index.html</code> — not linked publicly<br>
+          4. Data saved in your browser until you export and commit
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="tab-settings" class="tab-content">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-sub">Admin configuration</p>
+        <div class="form-group" style="max-width:360px">
+          <label class="form-label">New Password</label>
+          <input id="new-pw" class="form-ctrl" type="password" placeholder="Enter new password">
+        </div>
+        <button class="btn btn-primary" onclick="changePw()" style="margin-bottom:2rem">Update Password</button>
+        <div class="alert alert-info">The admin password is stored in your browser's localStorage — it prevents casual access, not server-level auth.</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Save Bar -->
+<div class="save-bar" id="save-bar">
+  <p>Unsaved changes</p>
+  <button class="btn btn-primary btn-sm" onclick="saveAll()">💾 Save</button>
+</div>
+
+<!-- Skill Modal -->
+<div class="overlay" id="skill-overlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="skill-modal-title">Skill Category</h2><button class="modal-close" onclick="closeOverlay('skill-overlay')">×</button></div>
+    <div class="form-group"><label class="form-label">Category Name</label><input id="sm-name" class="form-ctrl"></div>
+    <div class="form-group"><label class="form-label">Icon (emoji)</label><input id="sm-icon" class="form-ctrl" style="max-width:80px"></div>
+    <div class="form-group">
+      <label class="form-label">Tools / Skills</label>
+      <div class="tag-row" id="sm-tags"></div>
+      <div style="display:flex;gap:0.7rem">
+        <input id="sm-tag-inp" class="form-ctrl" style="max-width:180px" placeholder="Add tool..." onkeydown="if(event.key==='Enter')addSmTag()">
+        <button class="btn btn-ghost btn-sm" onclick="addSmTag()">+ Add</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeOverlay('skill-overlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSkill()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Modal -->
+<div class="overlay" id="proj-overlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="proj-modal-title">Project</h2><button class="modal-close" onclick="closeOverlay('proj-overlay')">×</button></div>
+    <div class="form-group"><label class="form-label">Title</label><input id="pm-title" class="form-ctrl"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Category</label><input id="pm-cat" class="form-ctrl"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Description</label><textarea id="pm-desc" class="form-ctrl"></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">GitHub URL</label><input id="pm-gh" class="form-ctrl" type="url"></div>
+      <div class="form-group"><label class="form-label">Demo / Blog URL</label><input id="pm-demo" class="form-ctrl" type="url"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags</label>
+      <div class="tag-row" id="pm-tags"></div>
+      <div style="display:flex;gap:0.7rem">
+        <input id="pm-tag-inp" class="form-ctrl" style="max-width:180px" onkeydown="if(event.key==='Enter')addPmTag()">
+        <button class="btn btn-ghost btn-sm" onclick="addPmTag()">+ Add</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Thumbnail Image</label>
+      <input type="file" id="pm-img" accept="image/*" class="form-ctrl" onchange="uploadProjImg(event)">
+      <img id="pm-img-prev" style="max-width:160px;margin-top:0.5rem;border-radius:10px;display:none">
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeOverlay('proj-overlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProj()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post Modal -->
+<div class="overlay" id="post-overlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="post-modal-title">Blog Post</h2><button class="modal-close" onclick="closeOverlay('post-overlay')">×</button></div>
+    <div class="form-group"><label class="form-label">Title</label><input id="bm-title" class="form-ctrl"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Date</label><input id="bm-date" class="form-ctrl" type="date"></div>
+      <div class="form-group"><label class="form-label">URL / Link</label><input id="bm-url" class="form-ctrl" type="url"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Excerpt</label><textarea id="bm-exc" class="form-ctrl"></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Tags</label>
+      <div class="tag-row" id="bm-tags"></div>
+      <div style="display:flex;gap:0.7rem">
+        <input id="bm-tag-inp" class="form-ctrl" style="max-width:180px" onkeydown="if(event.key==='Enter')addBmTag()">
+        <button class="btn btn-ghost btn-sm" onclick="addBmTag()">+ Add</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeOverlay('post-overlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePost()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Wave (lightweight version for admin) ----
+(function() {
+  const c = document.getElementById('wave-bg');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  function draw(ts) {
+    const W = c.width, H = c.height;
+    ctx.clearRect(0,0,W,H);
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    [[0.35,'rgba(194,0,90,0.10)'],[0.60,'rgba(130,0,200,0.08)'],[0.82,'rgba(210,20,80,0.06)']].forEach(([yf,col],i) => {
+      const baseY = H*yf, amp = H*0.08;
+      ctx.beginPath(); ctx.moveTo(0,H+10);
+      for (let x=0;x<=W+2;x+=3) {
+        const nx=x/W;
+        const y = baseY + Math.sin(nx*Math.PI*2+ts*0.0002+i*1.5)*amp + Math.sin(nx*Math.PI*3+ts*0.00013)*amp*0.3;
+        x===0 ? ctx.lineTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.lineTo(W,H+10); ctx.closePath();
+      const g=ctx.createLinearGradient(0,0,W,0); g.addColorStop(0,col); g.addColorStop(1,dark?'rgba(80,0,160,0.06)':'rgba(160,0,80,0.04)');
+      ctx.fillStyle=g; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ---- Theme ----
+function toggleTheme() {
+  const t = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', t === 'dark' ? 'light' : 'dark');
+}
+
+// ---- Auth ----
+function doLogin() {
+  const pw = document.getElementById('login-pw').value;
+  const stored = localStorage.getItem('admin_pw') || 'admin123';
+  if (pw === stored) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-main').style.display = 'block';
+    load();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    setTimeout(() => document.getElementById('login-err').style.display = 'none', 2000);
+  }
+}
+function doLogout() {
+  document.getElementById('admin-main').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-pw').value = '';
+}
+function changePw() {
+  const v = document.getElementById('new-pw').value.trim();
+  if (!v) return;
+  localStorage.setItem('admin_pw', v);
+  toast('Password updated!');
+  document.getElementById('new-pw').value = '';
+}
+
+// ---- Data ----
+let AD = {}, isDirty = false;
+function load() {
+  const s = localStorage.getItem('pf_admin_data');
+  AD = s ? JSON.parse(s) : {
+    personal:{name:'Alex Chen',initials:'A.C',title:'Cybersecurity Engineer',subtitle:'Security Researcher',tagline:'',bio:'',status:'Open to work',photo:'',stats:{experience:'5+',cves:'12',ctf:'47',clients:'30+'}},
+    certifications:['OSCP','CEH','Security+'],
+    skills:[{category:'Penetration Testing',icon:'⚔️',tags:['Metasploit','Burp Suite','Nmap']}],
+    projects:[],posts:[],
+    contact:{intro:'',links:[]}
+  };
+  populateForms();
+}
+function saveAll() {
+  collectForms();
+  localStorage.setItem('pf_admin_data', JSON.stringify(AD));
+  isDirty = false;
+  document.getElementById('save-bar').classList.remove('show');
+  toast('Saved!');
+}
+function dirty() { isDirty = true; document.getElementById('save-bar').classList.add('show'); }
+
+function populateForms() {
+  const p = AD.personal;
+  V('p-name',p.name); V('p-initials',p.initials); V('p-title',p.title);
+  V('p-subtitle',p.subtitle); V('p-tagline',p.tagline); V('p-bio',p.bio); V('p-status',p.status);
+  V('s-exp',p.stats.experience); V('s-cves',p.stats.cves); V('s-ctf',p.stats.ctf); V('s-clients',p.stats.clients);
+  V('c-intro',AD.contact.intro);
+  if (p.photo) { const img=document.getElementById('photo-prev'); img.src=p.photo; img.style.display='block'; }
+  renderCerts(); renderSkillsList(); renderProjList(); renderBlogList(); renderLinkList();
+}
+function collectForms() {
+  const p = AD.personal;
+  p.name=G('p-name'); p.initials=G('p-initials'); p.title=G('p-title');
+  p.subtitle=G('p-subtitle'); p.tagline=G('p-tagline'); p.bio=G('p-bio'); p.status=G('p-status');
+  p.stats.experience=G('s-exp'); p.stats.cves=G('s-cves'); p.stats.ctf=G('s-ctf'); p.stats.clients=G('s-clients');
+  AD.contact.intro=G('c-intro');
+}
+function V(id,v) { const el=document.getElementById(id); if(el) { el.tagName==='TEXTAREA'?el.value=v:el.value=v; } }
+function G(id) { const el=document.getElementById(id); return el?el.value:''; }
+
+// ---- Tabs ----
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ---- Photo ----
+function uploadPhoto(e) {
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{AD.personal.photo=ev.target.result; const img=document.getElementById('photo-prev'); img.src=ev.target.result; img.style.display='block'; dirty(); }; r.readAsDataURL(f);
+}
+
+// ---- Certs ----
+function renderCerts() {
+  const c=document.getElementById('cert-tags'); c.innerHTML='';
+  (AD.certifications||[]).forEach((t,i)=>{const sp=document.createElement('span'); sp.className='tag-chip'; sp.innerHTML=`${t}<span class="tag-x" onclick="removeCert(${i})">×</span>`; c.appendChild(sp);});
+}
+function addCert() { const inp=document.getElementById('cert-inp'); const v=inp.value.trim(); if(!v)return; AD.certifications.push(v); inp.value=''; renderCerts(); dirty(); }
+function removeCert(i) { AD.certifications.splice(i,1); renderCerts(); dirty(); }
+
+// ---- Skills ----
+let smTags=[], smIdx=null;
+function renderSkillsList() {
+  const l=document.getElementById('skills-list'); l.innerHTML='';
+  (AD.skills||[]).forEach((s,i)=>{ const el=document.createElement('div'); el.className='item-card'; el.innerHTML=`<div class="item-info"><div class="item-title">${s.icon} ${s.category}</div><div class="item-meta">${s.tags.join(' · ')}</div></div><div class="item-actions"><button class="btn btn-ghost btn-sm" onclick="openSkillModal(${i})">Edit</button><button class="btn btn-danger btn-sm" onclick="delSkill(${i})">Del</button></div>`; l.appendChild(el); });
+}
+function openSkillModal(idx) {
+  smIdx=idx??null; const s=idx!=null?AD.skills[idx]:{category:'',icon:'',tags:[]};
+  document.getElementById('skill-modal-title').textContent=idx!=null?'Edit Category':'Add Category';
+  V('sm-name',s.category); V('sm-icon',s.icon); smTags=[...(s.tags||[])]; renderSmTags();
+  document.getElementById('skill-overlay').classList.add('open');
+}
+function renderSmTags(){const c=document.getElementById('sm-tags');c.innerHTML='';smTags.forEach((t,i)=>{const sp=document.createElement('span');sp.className='tag-chip';sp.innerHTML=`${t}<span class="tag-x" onclick="smTags.splice(${i},1);renderSmTags()">×</span>`;c.appendChild(sp);});}
+function addSmTag(){const inp=document.getElementById('sm-tag-inp');const v=inp.value.trim();if(!v)return;smTags.push(v);inp.value='';renderSmTags();}
+function saveSkill(){const obj={category:G('sm-name'),icon:G('sm-icon'),tags:smTags};if(smIdx!=null)AD.skills[smIdx]=obj;else AD.skills.push(obj);closeOverlay('skill-overlay');renderSkillsList();dirty();}
+function delSkill(i){if(confirm('Delete?')){AD.skills.splice(i,1);renderSkillsList();dirty();}}
+
+// ---- Projects ----
+let pmTags=[], pmImg='', pmIdx=null;
+function renderProjList(){const l=document.getElementById('proj-list');l.innerHTML='';(AD.projects||[]).forEach((p,i)=>{const el=document.createElement('div');el.className='item-card';el.innerHTML=`<div class="item-info"><div class="item-title">${p.title}</div><div class="item-meta">${p.category} · ${p.tags.join(', ')}</div></div><div class="item-actions"><button class="btn btn-ghost btn-sm" onclick="openProjModal(${i})">Edit</button><button class="btn btn-danger btn-sm" onclick="delProj(${i})">Del</button></div>`;l.appendChild(el);});}
+function openProjModal(idx){pmIdx=idx??null;const p=idx!=null?AD.projects[idx]:{title:'',category:'',description:'',image:'',tags:[],links:{github:'',demo:''}};document.getElementById('proj-modal-title').textContent=idx!=null?'Edit Project':'Add Project';V('pm-title',p.title);V('pm-cat',p.category);V('pm-desc',p.description);V('pm-gh',(p.links&&p.links.github)||'');V('pm-demo',(p.links&&p.links.demo)||'');pmTags=[...(p.tags||[])];pmImg=p.image||'';const prev=document.getElementById('pm-img-prev');if(pmImg){prev.src=pmImg;prev.style.display='block';}else{prev.style.display='none';}renderPmTags();document.getElementById('proj-overlay').classList.add('open');}
+function renderPmTags(){const c=document.getElementById('pm-tags');c.innerHTML='';pmTags.forEach((t,i)=>{const sp=document.createElement('span');sp.className='tag-chip';sp.innerHTML=`${t}<span class="tag-x" onclick="pmTags.splice(${i},1);renderPmTags()">×</span>`;c.appendChild(sp);});}
+function addPmTag(){const inp=document.getElementById('pm-tag-inp');const v=inp.value.trim();if(!v)return;pmTags.push(v);inp.value='';renderPmTags();}
+function uploadProjImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{pmImg=ev.target.result;const p=document.getElementById('pm-img-prev');p.src=ev.target.result;p.style.display='block';};r.readAsDataURL(f);}
+function saveProj(){const obj={id:Date.now(),title:G('pm-title'),category:G('pm-cat'),description:G('pm-desc'),image:pmImg,tags:pmTags,links:{github:G('pm-gh'),demo:G('pm-demo')}};if(pmIdx!=null)AD.projects[pmIdx]=obj;else AD.projects.push(obj);closeOverlay('proj-overlay');renderProjList();dirty();}
+function delProj(i){if(confirm('Delete?')){AD.projects.splice(i,1);renderProjList();dirty();}}
+
+// ---- Blog ----
+let bmTags=[], bmIdx=null;
+function renderBlogList(){const l=document.getElementById('blog-list');l.innerHTML='';(AD.posts||[]).forEach((p,i)=>{const el=document.createElement('div');el.className='item-card';el.innerHTML=`<div class="item-info"><div class="item-title">${p.title}</div><div class="item-meta">${p.date} · ${p.tags.join(', ')}</div></div><div class="item-actions"><button class="btn btn-ghost btn-sm" onclick="openPostModal(${i})">Edit</button><button class="btn btn-danger btn-sm" onclick="delPost(${i})">Del</button></div>`;l.appendChild(el);});}
+function openPostModal(idx){bmIdx=idx??null;const p=idx!=null?AD.posts[idx]:{title:'',date:'',url:'',excerpt:'',tags:[]};document.getElementById('post-modal-title').textContent=idx!=null?'Edit Post':'Add Post';V('bm-title',p.title);V('bm-date',p.date);V('bm-url',p.url);V('bm-exc',p.excerpt);bmTags=[...(p.tags||[])];renderBmTags();document.getElementById('post-overlay').classList.add('open');}
+function renderBmTags(){const c=document.getElementById('bm-tags');c.innerHTML='';bmTags.forEach((t,i)=>{const sp=document.createElement('span');sp.className='tag-chip';sp.innerHTML=`${t}<span class="tag-x" onclick="bmTags.splice(${i},1);renderBmTags()">×</span>`;c.appendChild(sp);});}
+function addBmTag(){const inp=document.getElementById('bm-tag-inp');const v=inp.value.trim();if(!v)return;bmTags.push(v);inp.value='';renderBmTags();}
+function savePost(){const obj={id:Date.now(),title:G('bm-title'),date:G('bm-date'),url:G('bm-url'),excerpt:G('bm-exc'),tags:bmTags};if(bmIdx!=null)AD.posts[bmIdx]=obj;else AD.posts.push(obj);closeOverlay('post-overlay');renderBlogList();dirty();}
+function delPost(i){if(confirm('Delete?')){AD.posts.splice(i,1);renderBlogList();dirty();}}
+
+// ---- Contact Links ----
+function renderLinkList(){const l=document.getElementById('link-list');l.innerHTML='';(AD.contact.links||[]).forEach((lk,i)=>{const el=document.createElement('div');el.className='item-card';el.innerHTML=`<div style="display:flex;gap:0.8rem;flex:1;align-items:center;flex-wrap:wrap"><input class="form-ctrl" style="max-width:55px" value="${lk.icon}" onchange="AD.contact.links[${i}].icon=this.value;dirty()"><input class="form-ctrl" style="max-width:130px" value="${lk.label}" onchange="AD.contact.links[${i}].label=this.value;dirty()"><input class="form-ctrl" style="flex:1" value="${lk.url}" onchange="AD.contact.links[${i}].url=this.value;dirty()"></div><button class="btn btn-danger btn-sm" onclick="AD.contact.links.splice(${i},1);renderLinkList();dirty()">Del</button>`;l.appendChild(el);});}
+function addLink(){AD.contact.links.push({icon:'🔗',label:'New',url:''});renderLinkList();dirty();}
+
+// ---- Modals ----
+function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ---- Export ----
+function genExport(){collectForms();const js=`// ============================================================\n// PORTFOLIO DATA — Edit via /admin/index.html\n// ============================================================\n\nconst PORTFOLIO_DATA = ${JSON.stringify(AD,null,2)};`;document.getElementById('export-out').textContent=js;document.getElementById('export-out').style.display='block';document.getElementById('copy-wrap').style.display='block';}
+function copyExport(){navigator.clipboard.writeText(document.getElementById('export-out').textContent).then(()=>toast('Copied!'));}
+
+// ---- Toast ----
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent='✓ '+msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2000);}
+</script>
+</body>
+</html>

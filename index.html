@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Cybersecurity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Animated wave canvas background -->
+  <canvas id="wave-canvas"></canvas>
+
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+    <span class="toggle-icon sun">☀</span>
+    <span class="toggle-icon moon">☽</span>
+  </button>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <a class="nav-brand" href="#hero">
+      <span id="nav-initials">A.C</span>
+    </a>
+    <div class="nav-center">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#blog">Writeups</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-availability">
+      <span class="avail-dot"></span>
+      <span id="nav-status">Open to work</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-label" data-reveal>Security Researcher</div>
+      <h1 class="hero-name" data-reveal id="hero-name">Alex Chen</h1>
+      <p class="hero-tagline" data-reveal id="hero-tagline">
+        I find what others miss — vulnerabilities, threats, and the truth behind your attack surface.
+      </p>
+      <div class="hero-actions" data-reveal>
+        <a href="#projects" class="cta-main">See my work</a>
+        <a href="#contact" class="cta-ghost">Let's talk</a>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-layout">
+      <div class="about-left" data-reveal>
+        <div class="section-eyebrow">Who I am</div>
+        <h2>Security is not a product — it's a mindset.</h2>
+      </div>
+      <div class="about-right">
+        <div class="photo-block" data-reveal>
+          <div class="photo-ring">
+            <div class="photo-inner" id="about-photo-wrap">
+              <div class="photo-placeholder-icon" id="photo-placeholder">
+                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="40" cy="28" r="16" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 72 Q40 50 72 72" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <img id="about-photo" src="" alt="" style="display:none">
+            </div>
+          </div>
+          <div class="cert-stack" id="cert-stack"></div>
+        </div>
+        <div class="about-text-block" data-reveal>
+          <p id="about-bio">Loading...</p>
+          <div class="stat-row" id="stat-row">
+            <div class="stat-item"><strong id="stat-exp">—</strong><span>Years</span></div>
+            <div class="stat-item"><strong id="stat-cves">—</strong><span>CVEs</span></div>
+            <div class="stat-item"><strong id="stat-ctf">—</strong><span>CTF Wins</span></div>
+            <div class="stat-item"><strong id="stat-clients">—</strong><span>Clients</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-head" data-reveal>
+      <div class="section-eyebrow">Capabilities</div>
+      <h2>Technical Arsenal</h2>
+    </div>
+    <div class="skills-wrap" id="skills-wrap"></div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-head" data-reveal>
+      <div class="section-eyebrow">Work</div>
+      <h2>Selected Projects</h2>
+    </div>
+    <div class="project-filters" id="project-filters"></div>
+    <div class="projects-mosaic" id="projects-mosaic"></div>
+  </section>
+
+  <!-- BLOG -->
+  <section id="blog">
+    <div class="section-head" data-reveal>
+      <div class="section-eyebrow">Research</div>
+      <h2>Writeups & Posts</h2>
+    </div>
+    <div class="blog-river" id="blog-river"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-wrap">
+      <div class="contact-left" data-reveal>
+        <div class="section-eyebrow">Get in touch</div>
+        <h2>Let's work together.</h2>
+        <p id="contact-intro">Available for engagements, consulting, and research.</p>
+        <div class="social-links" id="social-links"></div>
+      </div>
+      <form class="contact-form" id="contact-form" data-reveal>
+        <div class="field-group">
+          <input type="text" class="field-input" placeholder=" " id="cf-name" required>
+          <label class="field-label">Your name</label>
+        </div>
+        <div class="field-group">
+          <input type="email" class="field-input" placeholder=" " id="cf-email" required>
+          <label class="field-label">Email address</label>
+        </div>
+        <div class="field-group">
+          <textarea class="field-input field-textarea" placeholder=" " id="cf-msg" required></textarea>
+          <label class="field-label">Message</label>
+        </div>
+        <button type="submit" class="submit-btn">Send message <span class="btn-arrow">→</span></button>
+      </form>
+    </div>
+  </section>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span id="footer-name">© 2025 Alex Chen</span>
+      <span class="footer-mid">Built with precision.</span>
+      <a href="/admin/index.html" class="footer-admin-link" tabindex="-1">·</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
